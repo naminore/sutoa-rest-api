@@ -10,7 +10,11 @@ from resources.item import Item, ItemList
 from resources.store import Store, StoreList
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']= os.environ.get("DATABASE_URL", "sqlite:///data.db")
+db_url= os.environ.get("DATABASE_URL", "sqlite:///data.db")
+if db_url != "sqlite:///data.db":
+  if db_url[:10] != "postgresql":
+    db_url= f"postgresql{db_url[8:]}"
+app.config['SQLALCHEMY_DATABASE_URI']= db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.secret_key = 'el secreto'
@@ -25,5 +29,5 @@ api.add_resource(StoreList, '/stores')
 api.add_resource(UserRegister, '/register')
 
 if __name__ == '__main__':
-    db.init_app(app)
-    app.run(debug=True)  # important to mention debug=True
+  db.init_app(app)
+  app.run(debug=True)  # important to mention debug=True
